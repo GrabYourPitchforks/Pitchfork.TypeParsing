@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32531.469
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pitchfork.TypeParsing", "Pitchfork.TypeParsing\Pitchfork.TypeParsing.csproj", "{62589772-85C7-4B4A-8025-E75D359DEA04}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pitchfork.TypeParsing.Tests", "Pitchfork.TypeParsing.Tests\Pitchfork.TypeParsing.Tests.csproj", "{335E8859-1186-4BA6-81EE-0BCD4F41F8D8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pitchfork.TypeParsing.Serialization", "Pitchfork.TypeParsing.Serialization\Pitchfork.TypeParsing.Serialization.csproj", "{3C23E120-CBB0-4BB2-8C01-6CC2ADF2D141}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pitchfork.TypeParsing.Serialization.Tests", "Pitchfork.TypeParsing.Serialization.Tests\Pitchfork.TypeParsing.Serialization.Tests.csproj", "{36D38076-A82F-4581-8666-117EA8139D41}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples", "Samples\Samples.csproj", "{07B30738-F182-4556-8201-936E12446AE2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A43407E2-B331-4305-9D47-4D020714E741}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{62589772-85C7-4B4A-8025-E75D359DEA04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62589772-85C7-4B4A-8025-E75D359DEA04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62589772-85C7-4B4A-8025-E75D359DEA04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62589772-85C7-4B4A-8025-E75D359DEA04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{335E8859-1186-4BA6-81EE-0BCD4F41F8D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{335E8859-1186-4BA6-81EE-0BCD4F41F8D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{335E8859-1186-4BA6-81EE-0BCD4F41F8D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{335E8859-1186-4BA6-81EE-0BCD4F41F8D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C23E120-CBB0-4BB2-8C01-6CC2ADF2D141}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C23E120-CBB0-4BB2-8C01-6CC2ADF2D141}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C23E120-CBB0-4BB2-8C01-6CC2ADF2D141}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C23E120-CBB0-4BB2-8C01-6CC2ADF2D141}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36D38076-A82F-4581-8666-117EA8139D41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36D38076-A82F-4581-8666-117EA8139D41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36D38076-A82F-4581-8666-117EA8139D41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36D38076-A82F-4581-8666-117EA8139D41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07B30738-F182-4556-8201-936E12446AE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07B30738-F182-4556-8201-936E12446AE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07B30738-F182-4556-8201-936E12446AE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07B30738-F182-4556-8201-936E12446AE2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {40D0D684-114A-46C6-AA58-74491572D3A3}
+	EndGlobalSection
+EndGlobal
