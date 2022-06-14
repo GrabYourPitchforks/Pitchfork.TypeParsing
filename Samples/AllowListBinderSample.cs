@@ -36,8 +36,7 @@ namespace Samples
 
             public override TypeId BindToType(TypeId typeId)
             {
-                typeId.Visit(new MyAllowListingVisitor()); // throw if any types not on the allow list
-                return typeId;
+                return typeId.Visit(new MyAllowListingVisitor()); // throw if any types not on the allow list
             }
         }
 
