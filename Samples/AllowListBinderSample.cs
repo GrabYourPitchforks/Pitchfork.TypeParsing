@@ -16,6 +16,12 @@ namespace Samples
             // n.b. this still allows nested generics (e.g., List<List<List<int>>>)
             //      and arrays (e.g., List<int[]>[]).
             //
+            // WARNING:
+            // Use of a binder does not make unsafe serializers like BinaryFormatter safe
+            // for untrusted inputs. But, since many developers insist on using this
+            // pattern anyway, here's an example of how to apply the pattern using the
+            // facilities exposed by this library.
+            //
             // TODO:
             // - Set the stream and formatter below to non-null values.
             // - Update the MyAllowListingVisitor.GetAllowedTypes method to contain
