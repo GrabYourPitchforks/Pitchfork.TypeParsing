@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -705,31 +706,32 @@ namespace Pitchfork.TypeParsing
                 // Non-elemental types get their assembly information from the
                 // basic elemental type. So we need to drill down to the elemental
                 // type and reconstruct it, then reapply all the decorators.
+                // We're applying them in reverse order since we're popping layers.
 
-                TypeIdDecoratorStack decoratorStack = default;
+                Stack<TypeIdDecorator>? decorators = null;
 
                 TypeId baseType;
                 for (baseType = this; !baseType.IsElementalType; baseType = baseType.GetUnderlyingType()!)
                 {
                     if (baseType.IsSzArrayType)
                     {
-                        decoratorStack.PushMakeSzArrayType();
+                        (decorators ??= new()).Push(TypeIdDecorator.SzArray);
                     }
                     else if (baseType.IsVariableBoundArrayType)
                     {
-                        decoratorStack.PushMakeVariableBoundArrayType(baseType.GetArrayRank());
+                        (decorators ??= new()).Push(TypeIdDecorator.MdArray(baseType.GetArrayRank()));
                     }
                     else if (baseType.IsConstructedGenericType)
                     {
-                        decoratorStack.PushMakeClosedGenericType(baseType.GetGenericParameters());
+                        (decorators ??= new()).Push(TypeIdDecorator.ConstructedGeneric(baseType.GetGenericParameters()));
                     }
                     else if (baseType.IsManagedPointerType)
                     {
-                        decoratorStack.PushMakeManagedPointerType();
+                        (decorators ??= new()).Push(TypeIdDecorator.ManagedPointer);
                     }
                     else if (baseType.IsUnmanagedPointerType)
                     {
-                        decoratorStack.PushMakeUnmanagedPointerType();
+                        (decorators ??= new()).Push(TypeIdDecorator.UnmanagedPointer);
                     }
                     else
                     {
@@ -744,7 +746,7 @@ namespace Pitchfork.TypeParsing
 
                 // Reapply decorators
 
-                retVal = decoratorStack.PopAllDecoratorsOnto(retVal);
+                retVal = decorators.ApplyAllDecoratorsOnto(retVal);
                 Debug.Assert(this.TotalComplexity == retVal.TotalComplexity, "We missed a decorator?");
                 return retVal;
             }

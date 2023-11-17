@@ -69,5 +69,12 @@ namespace Pitchfork.TypeParsing
         }
 
         public static bool StartsWith(this ReadOnlySpan<char> span, char value) => !span.IsEmpty && span[0] == value;
+
+        public static ReadOnlySpan<char> GetEverythingAfterLast(this ReadOnlySpan<char> value, char splitChar)
+        {
+            int idx = value.LastIndexOf(splitChar);
+            if (idx < 0) { idx = -1; };
+            return value.Slice(idx + 1);
+        }
     }
 }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using Pitchfork.Common;
 
 namespace Pitchfork.TypeParsing
 {
@@ -98,10 +99,12 @@ namespace Pitchfork.TypeParsing
                 uint chA = cultureNameA[i];
                 uint chB = cultureNameB[i];
 
-                if (MiscUtil.IsBetweenInclusive(chA, 'A', 'Z'))
+                if (MiscUtil.IsBetweenInclusive(chA | 0x20, 'a', 'z')
+                    || MiscUtil.IsBetweenInclusive(chB | 0x20, 'a', 'z'))
                 {
+                    // if either is outside A-Za-z range, new value will become garbage and compare not equal
                     chA |= 0x20;
-                    chB |= 0x20; // if outside A-Za-z range, will become garbage
+                    chB |= 0x20;
                 }
 
                 if (chA != chB) { return false; }

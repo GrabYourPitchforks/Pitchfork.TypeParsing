@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Pitchfork.Common;
 using Pitchfork.TypeParsing.Resources;
 
 namespace Pitchfork.TypeParsing.TypeInfo
@@ -11,7 +12,7 @@ namespace Pitchfork.TypeParsing.TypeInfo
         {
             Debug.Assert(!isSzArray || rank == 1, "SzArray types must have rank 1.");
 
-            if (rank < 1 || 32 < rank)
+            if (!MiscUtil.IsBetweenInclusive(rank, 1, 32))
             {
                 throw new ArgumentOutOfRangeException(
                     paramName: nameof(rank),

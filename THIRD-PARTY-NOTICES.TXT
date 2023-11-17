@@ -19,6 +19,14 @@ https://github.com/moq/moq/blob/main/LICENSE
 Copyright (c) Daniel Cazzulino and Contributors
 Licensed under the MIT License
 
+License notice for PolySharp
+----------------------------
+
+https://github.com/Sergio0694/PolySharp/blob/main/LICENSE
+
+Copyright (c) 2022 Sergio Pedri
+Licensed under the MIT License
+
 License notice for xunit
 ------------------------
 

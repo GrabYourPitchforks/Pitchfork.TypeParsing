@@ -79,11 +79,20 @@ namespace Pitchfork.TypeParsing.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The identifier &apos;{0}&apos; is not allowed..
+        ///   Looks up a localized string similar to A non-null, non-empty identifier is required..
         /// </summary>
-        internal static string Common_IdentifierNotAllowed {
+        internal static string Common_IdentifierMustNotBeNullOrEmpty {
             get {
-                return ResourceManager.GetString("Common_IdentifierNotAllowed", resourceCulture);
+                return ResourceManager.GetString("Common_IdentifierMustNotBeNullOrEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The identifier &apos;{0}&apos; is not allowed because it contains a forbidden code point (U+{1:X4})..
+        /// </summary>
+        internal static string Common_IdentifierNotAllowedForbiddenCodePoint {
+            get {
+                return ResourceManager.GetString("Common_IdentifierNotAllowedForbiddenCodePoint", resourceCulture);
             }
         }
         

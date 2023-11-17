@@ -123,8 +123,11 @@
   <data name="Common_DuplicateToken" xml:space="preserve">
     <value>Duplicate token: '{0}'</value>
   </data>
-  <data name="Common_IdentifierNotAllowed" xml:space="preserve">
-    <value>The identifier '{0}' is not allowed.</value>
+  <data name="Common_IdentifierMustNotBeNullOrEmpty" xml:space="preserve">
+    <value>A non-null, non-empty identifier is required.</value>
+  </data>
+  <data name="Common_IdentifierNotAllowedForbiddenCodePoint" xml:space="preserve">
+    <value>The identifier '{0}' is not allowed because it contains a forbidden code point (U+{1:X4}).</value>
   </data>
   <data name="Common_NonNegativeNumberNeeded" xml:space="preserve">
     <value>Non-negative number needed.</value>

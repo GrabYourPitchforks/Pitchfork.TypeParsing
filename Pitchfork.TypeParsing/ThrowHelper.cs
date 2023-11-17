@@ -26,10 +26,16 @@ namespace Pitchfork.TypeParsing
         }
 
         [DoesNotReturn]
-        public static void ThrowArgumentException_IdentifierNotAllowed(string? identifier)
+        public static void ThrowArgumentException_IdentifierMustNotBeNullOrEmpty()
+        {
+            throw new ArgumentException(SR.Common_IdentifierMustNotBeNullOrEmpty);
+        }
+
+        [DoesNotReturn]
+        public static void ThrowArgumentException_IdentifierNotAllowedForbiddenCodePoint(string identifier, uint codePoint)
         {
             throw new ArgumentException(
-                message: string.Format(CultureInfo.CurrentCulture, SR.Common_IdentifierNotAllowed, identifier));
+                message: string.Format(CultureInfo.CurrentCulture, SR.Common_IdentifierNotAllowedForbiddenCodePoint, identifier, codePoint));
         }
 
         [DoesNotReturn]

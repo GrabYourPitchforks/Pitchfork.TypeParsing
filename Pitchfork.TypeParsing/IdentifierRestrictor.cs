@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace Pitchfork.TypeParsing
 {
@@ -13,17 +14,12 @@ namespace Pitchfork.TypeParsing
     {
         protected abstract ReadOnlySpan<bool> GetAsciiCharsAllowMap();
 
-        private bool IsIdentifierAllowed([NotNullWhen(true)] string? name, bool allowNonAsciiChars)
+        private int GetIndexOfFirstDisallowedChar(string name, bool allowNonAsciiChars)
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                return false;
-            }
-
             ReadOnlySpan<bool> allowedAsciiCharsMap = GetAsciiCharsAllowMap();
             Debug.Assert(allowedAsciiCharsMap.Length == 128);
 
-            for (int i = 0; i < name!.Length; i++)
+            for (int i = 0; i < name.Length; i++)
             {
                 // Check for invalid UTF-16 sequences (we cannot process),
                 // control / whitespace / separator characters, and disallowed categories.
@@ -35,7 +31,7 @@ namespace Pitchfork.TypeParsing
 
                     if (!allowedAsciiCharsMap[c])
                     {
-                        return false;
+                        return i;
                     }
                 }
                 else
@@ -49,14 +45,14 @@ namespace Pitchfork.TypeParsing
                         || char.IsWhiteSpace(c)
                         || !IsUnicodeCategoryAllowed(char.GetUnicodeCategory(name, i)))
                     {
-                        return false;
+                        return i;
                     }
 
                     if (char.IsHighSurrogate(c)) { i++; } // already accounted for low surrogate above
                 }
             }
 
-            return true; // all checks passed
+            return -1; // all checks passed
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -98,9 +94,35 @@ namespace Pitchfork.TypeParsing
 
         private void ThrowIfDisallowedIdentifier([NotNull] string? name, ParseOptions options)
         {
-            if (!IsIdentifierAllowed(name, options.AllowNonAsciiIdentifiers))
+            if (string.IsNullOrEmpty(name))
             {
-                ThrowHelper.ThrowArgumentException_IdentifierNotAllowed(name);
+                ThrowHelper.ThrowArgumentException_IdentifierMustNotBeNullOrEmpty();
+            }
+
+            int idxOfFirstDisallowedChar = GetIndexOfFirstDisallowedChar(name!, options.AllowNonAsciiIdentifiers);
+            if (idxOfFirstDisallowedChar >= 0)
+            {
+                int disallowedCodePoint = name![idxOfFirstDisallowedChar]; // assume for now BMP char or unpaired surrogate
+
+                // If this is actually a well-formed UTF-16 surrogate pair, extract the supplementary code point now.
+                // If the code point is a BMP char, this additional work is unnecessary but harmless, so do it anyway.
+
+#if NETCOREAPP3_0_OR_GREATER
+                if (Rune.TryGetRuneAt(name, idxOfFirstDisallowedChar, out Rune disallowedRune))
+                {
+                    disallowedCodePoint = disallowedRune.Value;
+                }
+#else
+                try
+                {
+                    disallowedCodePoint = char.ConvertToUtf32(name, idxOfFirstDisallowedChar);
+                }
+                catch (ArgumentException)
+                {
+                }
+#endif
+
+                ThrowHelper.ThrowArgumentException_IdentifierNotAllowedForbiddenCodePoint(name, (uint)disallowedCodePoint);
             }
         }
 

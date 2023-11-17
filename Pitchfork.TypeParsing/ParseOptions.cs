@@ -5,6 +5,8 @@ namespace Pitchfork.TypeParsing
 {
     public sealed class ParseOptions : ICloneable
     {
+        private _ByValDetails _details;
+
         public ParseOptions()
             : this(toCopy: null)
         {
@@ -12,9 +14,7 @@ namespace Pitchfork.TypeParsing
 
         public ParseOptions(ParseOptions? toCopy)
         {
-            toCopy ??= GlobalDefaults;
-            this.AllowNonAsciiIdentifiers = toCopy.AllowNonAsciiIdentifiers;
-            this.MaxRecursiveDepth = toCopy.MaxRecursiveDepth;
+            _details = (toCopy ?? GlobalDefaults)._details;
         }
 
         // no-op ctor
@@ -34,24 +34,33 @@ namespace Pitchfork.TypeParsing
             AllowNonAsciiIdentifiers = true
         };
 
-        public bool AllowNonAsciiIdentifiers { get; set; }
+        public bool AllowNonAsciiIdentifiers
+        {
+            get => _details.AllowNonAsciiIdentifiers;
+            set => _details.AllowNonAsciiIdentifiers = value;
+        }
 
-        private int _maxRecursiveDepth;
         public int MaxRecursiveDepth
         {
-            get => _maxRecursiveDepth;
+            get => _details.MaxRecursiveDepth;
             set
             {
                 if (value <= 0)
                 {
                     throw new ArgumentOutOfRangeException(paramName: nameof(value));
                 }
-                _maxRecursiveDepth = value;
+                _details.MaxRecursiveDepth = value;
             }
         }
 
         public static ParseOptions Clone(ParseOptions? original) => new ParseOptions(original);
 
         object ICloneable.Clone() => Clone(this);
+
+        private struct _ByValDetails
+        {
+            internal bool AllowNonAsciiIdentifiers;
+            internal int MaxRecursiveDepth;
+        }
     }
 }

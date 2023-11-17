@@ -14,7 +14,7 @@ namespace Pitchfork.TypeParsing
         {
             StringBuilder builder = new StringBuilder();
             DebuggerDisplayHelper.AppendFriendlyDebugNameToBuilder(this, builder);
-            return builder.ToString();
+            return builder.Replace('+', '.').ToString(); // fix up nested type syntax before returning
         }
 
         private static class DebuggerDisplayHelper
@@ -46,39 +46,19 @@ namespace Pitchfork.TypeParsing
                 {
                     string typeName = typeId.Name;
                     // First, look for C# keywords.
-                    if (_reflectionTypeNamesToFriendlyNames.TryGetValue(typeName, out string friendlyName))
+                    if (_reflectionTypeNamesToFriendlyNames.TryGetValue(typeName, out string? friendlyName))
                     {
                         builder.Append(friendlyName);
                     }
                     else
                     {
-                        if (!typeId.IsLikelyGenericTypeDefinition(out _))
-                        {
-                            // This isn't an open generic type; strip off the namespace and write only the type name.
-                            int lastIdxOfNamespaceSeparator = typeName.LastIndexOf('.');
-                            if (lastIdxOfNamespaceSeparator < 0) { lastIdxOfNamespaceSeparator = -1; }
-                            string substr = typeName.Substring(lastIdxOfNamespaceSeparator + 1);
-                            builder.Append(substr.Replace('+', '.')); // replace nested type markers if they exist
-                        }
-                        else
-                        {
-                            // Open generic type (List<> or List<>.Enumerator); fill in missing brackets.
+                        // Strip off the namespace and write only the type name. For open generic types this will
+                        // output "Foo`2" instead of "Foo<,>". This is desirable behavior because it prevents malicious
+                        // inputs like "Foo`500000000" from causing us to allocate huge strings and exhaust memory.
+                        // Closed generic types (e.g., "Foo`2[[A],[B]]") are handled later.
 
-                            (var beforeArityMarker, var afterArityMarker) = typeName.AsSpan().SplitForbidEmptyTrailer('`');
-                            int lastIdxOfNamespaceSeparator = beforeArityMarker.LastIndexOf('.');
-                            if (lastIdxOfNamespaceSeparator < 0) { lastIdxOfNamespaceSeparator = -1; }
-                            builder.Append(beforeArityMarker.Slice(lastIdxOfNamespaceSeparator + 1));
-                            afterArityMarker = afterArityMarker.ToString().Replace('+', '.').AsSpan(); // replace nested type markers if they exist
-                            builder.Append('<');
-                            do
-                            {
-                                int arity = ExtractNextGenericArity(ref afterArityMarker);
-                                builder.Append(',', arity - 1);
-                                builder.Append('>');
-                                (beforeArityMarker, afterArityMarker) = afterArityMarker.SplitForbidEmptyTrailer('`');
-                                builder.Append(beforeArityMarker);
-                            } while (!afterArityMarker.IsEmpty);
-                        }
+                        var nameWithoutNamespace = typeName.AsSpan().GetEverythingAfterLast('.');
+                        builder.Append(nameWithoutNamespace);
                     }
                 }
                 else if (typeId.IsArrayType)
@@ -111,6 +91,11 @@ namespace Pitchfork.TypeParsing
                 }
                 else if (typeId.IsConstructedGenericType)
                 {
+                    // Unlike open generic types, closed generic types require the caller to pass full
+                    // generic argument information. This means that we won't perform O(n) work unless
+                    // our caller passed input of O(n) length. This mitigates algorithmic complexity
+                    // attacks and allows us to populate full generic type information in the response.
+
                     var cgi = typeId.GetConstructedGenericInfoOrThrow(); // no copy
                     string elementalTypeName = cgi.ElementalType.Name;
                     if (elementalTypeName == "System.Nullable`1" && cgi.GenericArguments.Length == 1)
@@ -123,15 +108,12 @@ namespace Pitchfork.TypeParsing
                     {
                         // See if there are nested generics, like List<T>.Enumerator
                         (var beforeArityMarker, var afterArityMarker) = elementalTypeName.AsSpan().SplitForbidEmptyTrailer('`');
-                        int lastIdxOfNamespaceSeparator = beforeArityMarker.LastIndexOf('.');
-                        if (lastIdxOfNamespaceSeparator < 0) { lastIdxOfNamespaceSeparator = -1; }
-                        builder.Append(beforeArityMarker.Slice(lastIdxOfNamespaceSeparator + 1));
-                        afterArityMarker = afterArityMarker.ToString().Replace('+', '.').AsSpan(); // replace nested type markers if they exist
-                        builder.Append('<');
+                        builder.Append(beforeArityMarker.GetEverythingAfterLast('.'));
                         ReadOnlySpan<TypeId> remainingGenericArguments = cgi.GenericArguments;
                         do
                         {
                             int thisLevelArity = ExtractNextGenericArity(ref afterArityMarker);
+                            builder.Append('<');
                             foreach (TypeId genericArgument in remainingGenericArguments.Slice(0, thisLevelArity))
                             {
                                 AppendFriendlyDebugNameToBuilder(genericArgument, builder);

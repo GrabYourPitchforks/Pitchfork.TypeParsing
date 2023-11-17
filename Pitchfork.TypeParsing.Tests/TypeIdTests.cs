@@ -291,7 +291,6 @@ namespace Pitchfork.TypeParsing.Tests
             TypeId simpleTypeAWithAsm = TypeId.ParseAssemblyQualifiedName("SimpleTypeA, AssemblyA");
             TypeId simpleTypeBWithAsm = TypeId.ParseAssemblyQualifiedName("SimpleTypeB, AssemblyB");
             TypeId generic1ArityWithAsm = TypeId.ParseAssemblyQualifiedName("Generic`1, AssemblyGeneric1");
-            TypeId generic2ArityWithAsm = TypeId.ParseAssemblyQualifiedName("Generic`2, AssemblyGeneric2");
 
             TypeId simpleTypeAWithoutAsm = TypeId.ParseAssemblyQualifiedName("SimpleTypeA");
             TypeId simpleTypeBWithoutAsm = TypeId.ParseAssemblyQualifiedName("SimpleTypeB");
@@ -310,6 +309,16 @@ namespace Pitchfork.TypeParsing.Tests
                 "   SimpleTypeB", // spaces are trimmed as long as they're not immediately after the type name
                 simpleTypeBWithoutAsm,
                 1
+            };
+
+            yield return new object[]
+            {
+                "SimpleTypeA* []", // spaces between decorators are ok
+                simpleTypeAWithoutAsm.MakeUnmanagedPointerType().MakeSzArrayType(),
+                3 //                  2                          1
+                  // alternatively: (01) SimpleTypeA*[]
+                  //                (02) SimpleTypeA*
+                  //                (03) SimpleTypeA
             };
 
             yield return new object[]
