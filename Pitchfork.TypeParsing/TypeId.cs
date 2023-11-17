@@ -202,11 +202,11 @@ namespace Pitchfork.TypeParsing
                 {
                     ThrowNotSupportedException(type, SR.TypeId_ExistingTypeNotAllowed_NoComTypes);
                 }
-                else if (false)
-                {
-                    // TODO: How do we detect function pointers?
-                    ThrowNotSupportedException(type, SR.TypeId_ExistingTypeNotAllowed_NoFunctionPointers);
-                }
+                // TODO: How do we detect function pointers?
+                //else if (false)
+                //{
+                //    ThrowNotSupportedException(type, SR.TypeId_ExistingTypeNotAllowed_NoFunctionPointers);
+                //}
 
                 // Unwrap and apply decorators as needed.
 
@@ -239,8 +239,14 @@ namespace Pitchfork.TypeParsing
                     Debug.Assert(!type.HasElementType, "Expected this to be an elemental type.");
 
                     IdentifierRestrictor.ThrowIfDisallowedTypeName(type.Name, ParseOptions.FromExistingIdentifier);
+                    string? fullName = type.FullName;
+                    if (string.IsNullOrEmpty(fullName))
+                    {
+                        ThrowHelper.ThrowArgumentException_IdentifierMustNotBeNullOrEmpty();
+                    }
+
                     return new TypeId(
-                        name: type.FullName,
+                        name: fullName,
                         cti: null,
                         totalComplexity: 1,
                         assembly: GetAssemblyForType(type, followTypeForwards));

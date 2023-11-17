@@ -7,10 +7,17 @@
     <HighEntropyVA>true</HighEntropyVA>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
+	  <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <SignAssembly>True</SignAssembly>
     <ActualSigningKeyFile>..\IdentityKey.snk</ActualSigningKeyFile>
     <AssemblyOriginatorKeyFile>..\IdentityPubKey.snk</AssemblyOriginatorKeyFile>
     <DelaySign>True</DelaySign>
+  </PropertyGroup>
+	
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'netstandard2.0'">
+	<!-- Only .NET 5+ APIs contain nullable annotations; suppress all downlevel warnings
+	     but allow our own annotations to be generated. -->
+    <Nullable>annotations</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

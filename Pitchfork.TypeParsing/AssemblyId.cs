@@ -37,7 +37,7 @@ namespace Pitchfork.TypeParsing
                 // Throw a friendly error message, but accessing the FullName property might throw.
                 // If it does, we'll just use the naked name in our exception message.
 
-                string asmName;
+                string? asmName;
                 try
                 {
                     asmName = existingAssemblyName.FullName;
