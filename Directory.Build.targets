@@ -1,0 +1,63 @@
+<Project>
+	<PropertyGroup>
+		<IsRetailAssembly>False</IsRetailAssembly>
+		<IsRetailAssembly Condition="$(MSBuildProjectName.StartsWith('Pitchfork.TypeParsing')) AND !$(MSBuildProjectName.EndsWith('.Tests'))">True</IsRetailAssembly>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(IsRetailAssembly)">
+		<Version>$(RetailVersion)</Version>
+
+		<!-- Only modern .NET contains nullable annotations at the API surface; suppress all
+		     downlevel warnings but allow our own annotations to be generated. -->
+		<Nullable>enable</Nullable>
+		<Nullable Condition="'$(TargetFrameworkIdentifier)' != '.NETCoreApp'">annotations</Nullable>
+
+		<!-- other common settings -->
+		<HighEntropyVA>true</HighEntropyVA>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<LangVersion>latest</LangVersion>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+		<!-- assembly strong name signing -->
+		<SignAssembly>True</SignAssembly>
+		<ActualSigningKeyFile>$(MSBuildThisFileDirectory)IdentityKey.snk</ActualSigningKeyFile>
+		<AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)IdentityPubKey.snk</AssemblyOriginatorKeyFile>
+		<DelaySign>True</DelaySign>
+	</PropertyGroup>
+
+	<Choose>
+		<When Condition="$(IsRetailAssembly) AND '$(Configuration)' == 'Release'">
+			<!-- package generation -->
+			<PropertyGroup>
+				<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+				<Authors>levib</Authors>
+				<PackageReadmeFile>README.md</PackageReadmeFile>
+				<RepositoryUrl>https://github.com/GrabYourPitchforks/Pitchfork.TypeParsing</RepositoryUrl>
+				<PackageLicenseExpression>MIT</PackageLicenseExpression>
+				<Copyright>(c) Levi Broderick</Copyright>
+				<IncludeSymbols>True</IncludeSymbols>
+				<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+			</PropertyGroup>
+			<ItemGroup >
+				<None Include="$(MSBuildThisFileDirectory)README.md">
+					<Pack>True</Pack>
+					<PackagePath>\</PackagePath>
+				</None>
+			</ItemGroup>
+		</When>
+	</Choose>
+
+	<!-- forbid referencing any version of Moq that's not 4.18.4 from tests -->
+	<Target Name="MoqCheck" AfterTargets="PostBuildEvent">
+		<Error Condition="'%(PackageReference.Identity)' == 'Moq' AND '%(PackageReference.Version)' != '4.18.4'"
+			   Text="Unauthorized version of Moq (%(PackageReference.Version)) detected."></Error>
+	</Target>
+
+	<!-- assembly strong name signing -->
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(IsRetailAssembly)">
+		<GetFrameworkSdkPath>
+			<Output TaskParameter="Path" PropertyName="FrameworkSdkPath" />
+		</GetFrameworkSdkPath>
+		<Exec Command="&quot;$(FrameworkSdkPath)\bin\NETFX 4.8 Tools\x64\sn.exe&quot; -Ra &quot;$(TargetPath)&quot; &quot;$(ActualSigningKeyFile)&quot;" />
+	</Target>
+</Project>

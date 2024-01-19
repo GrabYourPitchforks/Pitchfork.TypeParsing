@@ -3,21 +3,7 @@
   <PropertyGroup>
     <!-- net462-specific target to avoid additional dependencies in netfx -->
     <TargetFrameworks>netstandard2.0;net462;net6.0</TargetFrameworks>
-    <Nullable>enable</Nullable>
-    <HighEntropyVA>true</HighEntropyVA>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>latest</LangVersion>
-	  <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <SignAssembly>True</SignAssembly>
-    <ActualSigningKeyFile>..\IdentityKey.snk</ActualSigningKeyFile>
-    <AssemblyOriginatorKeyFile>..\IdentityPubKey.snk</AssemblyOriginatorKeyFile>
-    <DelaySign>True</DelaySign>
-  </PropertyGroup>
-	
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'netstandard2.0'">
-	<!-- Only .NET 5+ APIs contain nullable annotations; suppress all downlevel warnings
-	     but allow our own annotations to be generated. -->
-    <Nullable>annotations</Nullable>
+	<Description>Serialization helpers for Pitchfork.TypeParsing.</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -38,12 +24,5 @@
       <LastGenOutput>SR.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-	
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <GetFrameworkSdkPath>
-      <Output TaskParameter="Path" PropertyName="FrameworkSdkPath" />
-    </GetFrameworkSdkPath>
-    <Exec Command="&quot;$(FrameworkSdkPath)\bin\NETFX 4.8 Tools\x64\sn.exe&quot; -Ra &quot;$(TargetPath)&quot; &quot;$(ActualSigningKeyFile)&quot;" />
-  </Target>
 
 </Project>

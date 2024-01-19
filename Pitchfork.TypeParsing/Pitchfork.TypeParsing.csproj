@@ -3,21 +3,7 @@
   <PropertyGroup>
 	<!-- net462-specific target to avoid additional dependencies in netfx -->
     <TargetFrameworks>netstandard2.0;net462;net6.0;net8.0</TargetFrameworks>
-    <Nullable>enable</Nullable>
-    <HighEntropyVA>true</HighEntropyVA>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>latest</LangVersion>
-	  <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <SignAssembly>True</SignAssembly>
-    <ActualSigningKeyFile>..\IdentityKey.snk</ActualSigningKeyFile>
-    <AssemblyOriginatorKeyFile>..\IdentityPubKey.snk</AssemblyOriginatorKeyFile>
-    <DelaySign>True</DelaySign>
-  </PropertyGroup>
-	
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'netstandard2.0'">
-	<!-- Only .NET 5+ APIs contain nullable annotations; suppress all downlevel warnings
-	     but allow our own annotations to be generated. -->
-    <Nullable>annotations</Nullable>
+    <Description>Helpers for parsing type information from strings safely.</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,13 +11,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.1" Condition="'$(TargetFrameworkIdentifier)' != '.NETCoreApp'" />
     <PackageReference Include="PolySharp" Version="1.14.1">
-      <PrivateAssets>all</PrivateAssets>
+    <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Memory" Version="4.5.5" />
-    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+    <PackageReference Include="System.Memory" Version="4.5.5" Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'netstandard2.1'))" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" Condition="'$(TargetFramework)' == 'net462'" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,12 +34,5 @@
       <LastGenOutput>SR.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <GetFrameworkSdkPath>
-      <Output TaskParameter="Path" PropertyName="FrameworkSdkPath" />
-    </GetFrameworkSdkPath>
-    <Exec Command="&quot;$(FrameworkSdkPath)\bin\NETFX 4.8 Tools\x64\sn.exe&quot; -Ra &quot;$(TargetPath)&quot; &quot;$(ActualSigningKeyFile)&quot;" />
-  </Target>
 
 </Project>
